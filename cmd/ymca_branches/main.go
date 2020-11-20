@@ -6,6 +6,7 @@ import (
 	"github.com/caarlos0/env"
 	"github.com/gocolly/colly"
 	"github.com/igorkichuk/scrapper/internal/pkg/fatalfuncs"
+	"github.com/igorkichuk/scrapper/internal/pkg/match"
 	"github.com/jasonwinn/geocoder"
 	"github.com/joho/godotenv"
 	"net/http"
@@ -103,7 +104,10 @@ func main() {
 func parseStaffCallback(e *colly.HTMLElement) {
 	var emails []string
 	e.ForEach(".block-description--wrapper .left-col p a", func(i int, el *colly.HTMLElement) {
-		emails = append(emails, el.Text)
+		ok, _ := match.Email(el.Text)
+		if ok {
+			emails = append(emails, el.Text)
+		}
 	})
 
 	bi, err := getBranchInfoFromCtx(e.Request.Ctx)
